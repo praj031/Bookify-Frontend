@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card, CardBody, CardHeader } from '../components/ui/Card'
 import { CheckCircle, CreditCard, Zap } from 'lucide-react'
+import { formatDate } from '../utils/formatters'
 
 export function SubscriptionPage() {
   const { showToast } = useToast()
@@ -54,12 +55,12 @@ export function SubscriptionPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <p className="text-xs text-surface-500">Started</p>
-                <p className="font-medium text-surface-800">{new Date(subscription.startDate).toLocaleDateString()}</p>
+                <p className="font-medium text-surface-800">{formatDate(subscription.startDate)}</p>
               </div>
               {subscription.renewalDate && (
                 <div>
                   <p className="text-xs text-surface-500">Renews</p>
-                  <p className="font-medium text-surface-800">{new Date(subscription.renewalDate).toLocaleDateString()}</p>
+                  <p className="font-medium text-surface-800">{formatDate(subscription.renewalDate)}</p>
                 </div>
               )}
             </div>

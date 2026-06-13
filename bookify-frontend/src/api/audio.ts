@@ -1,4 +1,5 @@
 import { client } from './client'
+import { storage } from '../utils/storage'
 import type { AudioConversionRequest, AudioUsage, ConversionJob } from '../types/audio'
 
 export async function requestConversion(payload: AudioConversionRequest): Promise<{ conversionJobId: string }> {
@@ -15,7 +16,7 @@ export async function downloadAudio(id: string): Promise<Blob> {
 
 export function getAudioStreamUrl(id: string): string {
   const base = client.defaults.baseURL || ''
-  const token = localStorage.getItem('bookify_token')
+  const token = storage.getToken()
   const url = `${base}/audio/${id}/stream`
   if (!token) return url
   return `${url}?token=${encodeURIComponent(token)}`
@@ -27,7 +28,6 @@ export async function getAudioUsage(): Promise<AudioUsage> {
 }
 
 export async function getConversionJobStatus(id: string): Promise<ConversionJob> {
-  // Polling endpoint inferred from backend architecture
   const { data } = await client.get<ConversionJob>(`/audio/jobs/${id}`)
   return data
 }

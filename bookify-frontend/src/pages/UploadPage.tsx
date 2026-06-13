@@ -15,15 +15,17 @@ import { ArrowLeft, FileText, BookMarked, Image, Info } from 'lucide-react'
 import { cn } from '../utils/cn'
 import type { BookType } from '../types/book'
 
-const MAX_SIZES: Record<'FREE' | 'PREMIUM', Record<BookType, number>> = {
+type PlanKey = 'FREE' | 'PREMIUM'
+
+const MAX_SIZES: Record<PlanKey, Record<BookType, number>> = {
   FREE: { INFO: 2 * 1024 * 1024, BOOK: 0, GRAPHICAL: 0 },
   PREMIUM: { INFO: 2 * 1024 * 1024, BOOK: 10 * 1024 * 1024, GRAPHICAL: 20 * 1024 * 1024 },
 }
 
-const typeOptions: Array<{ value: BookType; label: string; icon: React.ElementType; desc: string }> = [
-  { value: 'INFO', label: 'Informational', icon: FileText, desc: 'Text-only documents, ≤2MB' },
-  { value: 'BOOK', label: 'Book', icon: BookMarked, desc: 'Standard PDFs, up to 10MB (Premium)' },
-  { value: 'GRAPHICAL', label: 'Graphical', icon: Image, desc: 'Image-heavy PDFs, up to 20MB (Premium)' },
+const typeOptions: Array<{ value: BookType; label: string; icon: React.ElementType; desc: string; requiresPremium: boolean }> = [
+  { value: 'INFO', label: 'Informational', icon: FileText, desc: 'Text-only documents, ≤2MB', requiresPremium: false },
+  { value: 'BOOK', label: 'Book', icon: BookMarked, desc: 'Standard PDFs, up to 10MB (Premium)', requiresPremium: true },
+  { value: 'GRAPHICAL', label: 'Graphical', icon: Image, desc: 'Image-heavy PDFs, up to 20MB (Premium)', requiresPremium: true },
 ]
 
 export function UploadPage() {
@@ -33,7 +35,7 @@ export function UploadPage() {
   const [selectedType, setSelectedType] = useState<BookType>('INFO')
   const [file, setFile] = useState<File | null>(null)
 
-  const plan: 'FREE' | 'PREMIUM' = usage?.plan || 'FREE'
+  const plan: PlanKey = usage?.plan === 'PREMIUM' ? 'PREMIUM' : 'FREE'
   const limits = MAX_SIZES[plan]
 
   const {
@@ -122,7 +124,7 @@ export function UploadPage() {
                 {typeOptions.map((opt) => {
                   const Icon = opt.icon
                   const isActive = selectedType === opt.value
-                  const isBlocked = plan === 'FREE' && opt.value !== 'INFO'
+                  const isBlocked = plan === 'FREE' && opt.requiresPremium
                   return (
                     <button
                       key={opt.value}

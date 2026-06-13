@@ -98,7 +98,7 @@ export function AudioConverterPage() {
           {usage && usage.plan === 'FREE' && (
             <div className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 border border-amber-200">
               <AlertTriangle className="inline h-3.5 w-3.5 mr-1" />
-              Free tier limited to {usage.totalAllowed} conversions total.
+              Free tier limited to {usage.totalAllowed} conversions total.{' '}
               <Link to="/subscription" className="font-semibold underline">Upgrade to Premium</Link> for unlimited.
             </div>
           )}

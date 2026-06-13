@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { getAudioStreamUrl } from '../api/audio'
+import { getAudioStreamUrl, downloadAudio } from '../api/audio'
 import { Card, CardBody } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Skeleton } from '../components/common/SkeletonLoader'
+import { useToast } from '../components/common/Toast'
 import {
   ArrowLeft,
   Play,
@@ -25,9 +26,32 @@ export function AudioPlayerPage() {
   const [duration, setDuration] = useState(0)
   const [volume, setVolume] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
+  const [isDownloading, setIsDownloading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   const streamUrl = jobId ? getAudioStreamUrl(jobId) : ''
+
+  const handleDownload = useCallback(async () => {
+    if (!jobId || isDownloading) return
+    setIsDownloading(true)
+    try {
+      const blob = await downloadAudio(jobId)
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `audiobook-${jobId}.mp3`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      showToast('Download started', 'success')
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Download failed', 'error')
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [jobId, isDownloading, showToast])
 
   useEffect(() => {
     const audio = audioRef.current
@@ -194,7 +218,7 @@ export function AudioPlayerPage() {
 
           <div className="flex items-center justify-center gap-3">
             {jobId && (
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleDownload} isLoading={isDownloading}>
                 <Download className="h-4 w-4" /> Download
               </Button>
             )}

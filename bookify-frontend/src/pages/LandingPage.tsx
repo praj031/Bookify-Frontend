@@ -104,7 +104,7 @@ export function LandingPage() {
             <h2 className="text-2xl font-bold tracking-tight text-surface-900 sm:text-3xl">Simple pricing</h2>
             <p className="mt-3 text-surface-600">Start free and upgrade when you need more power.</p>
           </div>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 max-w-3xl mx-auto">
+          <div className="mt-10 grid gap-6 sm:grid-cols-3 max-w-4xl mx-auto">
             <div className="rounded-xl border border-surface-200 bg-surface-0 p-6">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-surface-500">Free</h3>
               <div className="mt-2 flex items-baseline gap-1">
@@ -113,9 +113,29 @@ export function LandingPage() {
               </div>
               <ul className="mt-5 space-y-2 text-sm text-surface-600">
                 {[
-                  'Unlimited informational PDF uploads (≤2MB)',
+                  'Read-only access to marketplace',
+                  'Community reviews & comments',
+                  'Basic library management',
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border border-primary-300 bg-surface-0 p-6">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-surface-500">Basic</h3>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-3xl font-bold text-surface-900">$4.99</span>
+                <span className="text-sm text-surface-500">/month</span>
+              </div>
+              <ul className="mt-5 space-y-2 text-sm text-surface-600">
+                {[
+                  'Upload INFO PDFs (≤2MB)',
                   '5 AI audio conversions',
                   'Community reviews & comments',
+                  'Purchase-gated chat',
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />

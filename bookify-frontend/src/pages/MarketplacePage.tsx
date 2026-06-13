@@ -16,10 +16,14 @@ const typeFilters: { value: BookType | ''; label: string }[] = [
   { value: 'GRAPHICAL', label: 'Graphical' },
 ]
 
-const typeIcons: Record<BookType, React.ElementType> = {
+const typeIcons: Record<string, React.ElementType> = {
   INFO: FileText,
   BOOK: BookMarked,
   GRAPHICAL: Image,
+}
+
+function getTypeIcon(type: BookType | string | undefined) {
+  return typeIcons[type || ''] || BookOpen
 }
 
 export function MarketplacePage() {
@@ -108,7 +112,7 @@ export function MarketplacePage() {
         <>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {result.content.map((book) => {
-              const Icon = typeIcons[book.type]
+              const Icon = getTypeIcon(book.type)
               return (
                 <Link
                   key={book.id}
@@ -119,11 +123,11 @@ export function MarketplacePage() {
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-50">
                       <Icon className="h-5 w-5 text-primary-600" />
                     </div>
-                    <Badge>{book.type}</Badge>
+                    <Badge>{book.type || 'BOOK'}</Badge>
                   </div>
 
                   <h3 className="mt-3 text-base font-semibold text-surface-900 group-hover:text-primary-700 transition-colors line-clamp-1">
-                    {book.title}
+                    {book.title || 'Untitled'}
                   </h3>
                   {book.description && (
                     <p className="mt-1 text-sm text-surface-500 line-clamp-2">{book.description}</p>

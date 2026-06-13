@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Review, Comment, ChatMessage, CreateReviewRequest, CreateCommentRequest, SendChatRequest } from '../types/community'
 import { getReviews, addReview, getComments, addComment, getChatHistory, sendChatMessage } from '../api/community'
 
+function isArrayResponse<T>(data: unknown): data is T[] {
+  return Array.isArray(data)
+}
+
 export function useReviews(bookId: number) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -12,7 +16,12 @@ export function useReviews(bookId: number) {
     setError(null)
     try {
       const data = await getReviews(bookId)
-      setReviews(data)
+      if (isArrayResponse<Review>(data)) {
+        setReviews(data)
+      } else {
+        setReviews([])
+        console.warn('Reviews API returned non-array response:', data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load reviews'))
     } finally {
@@ -43,7 +52,12 @@ export function useComments(bookId: number) {
     setError(null)
     try {
       const data = await getComments(bookId)
-      setComments(data)
+      if (isArrayResponse<Comment>(data)) {
+        setComments(data)
+      } else {
+        setComments([])
+        console.warn('Comments API returned non-array response:', data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load comments'))
     } finally {
@@ -74,7 +88,12 @@ export function useChat(bookId: number) {
     setError(null)
     try {
       const data = await getChatHistory(bookId)
-      setMessages(data)
+      if (isArrayResponse<ChatMessage>(data)) {
+        setMessages(data)
+      } else {
+        setMessages([])
+        console.warn('Chat API returned non-array response:', data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load chat'))
     } finally {

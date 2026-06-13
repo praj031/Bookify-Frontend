@@ -3,7 +3,7 @@ import { useInventory } from '../hooks/useBooks'
 import { EmptyState } from '../components/common/EmptyState'
 import { BookCardSkeleton } from '../components/common/SkeletonLoader'
 import { Badge } from '../components/ui/Badge'
-import { BookOpen, Upload, FileText, Image, BookMarked } from 'lucide-react'
+import { BookOpen, Upload, FileText, BookMarked, Image } from 'lucide-react'
 import { formatDate } from '../utils/formatters'
 import type { BookType } from '../types/book'
 
@@ -11,6 +11,13 @@ const typeConfig: Record<BookType, { label: string; icon: React.ElementType; col
   INFO: { label: 'Info', icon: FileText, color: 'bg-blue-50 text-blue-700 border-blue-200' },
   BOOK: { label: 'Book', icon: BookMarked, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   GRAPHICAL: { label: 'Graphical', icon: Image, color: 'bg-amber-50 text-amber-700 border-amber-200' },
+}
+
+function getBookTypeConfig(type: BookType | string | undefined) {
+  if (!type || !typeConfig[type as BookType]) {
+    return { label: 'Book', icon: BookOpen, color: 'bg-surface-100 text-surface-700 border-surface-200' }
+  }
+  return typeConfig[type as BookType]
 }
 
 export function DashboardPage() {
@@ -66,7 +73,7 @@ export function DashboardPage() {
       {!isLoading && books.length > 0 && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {books.map((book) => {
-            const config = typeConfig[book.type]
+            const config = getBookTypeConfig(book.type)
             const Icon = config.icon
             return (
               <Link
@@ -85,7 +92,7 @@ export function DashboardPage() {
                 </div>
 
                 <h3 className="mt-3 text-base font-semibold text-surface-900 group-hover:text-primary-700 transition-colors line-clamp-1">
-                  {book.title}
+                  {book.title || 'Untitled'}
                 </h3>
                 {book.description && (
                   <p className="mt-1 text-sm text-surface-500 line-clamp-2">{book.description}</p>
@@ -93,7 +100,7 @@ export function DashboardPage() {
 
                 <div className="mt-auto pt-4 flex items-center justify-between text-xs text-surface-400">
                   <span>{formatDate(book.uploadedAt)}</span>
-                  <Badge variant={book.status === 'READY' ? 'success' : 'warning'}>{book.status}</Badge>
+                  <Badge variant={book.status === 'READY' ? 'success' : 'warning'}>{book.status || 'UNKNOWN'}</Badge>
                 </div>
               </Link>
             )

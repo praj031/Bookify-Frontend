@@ -1,5 +1,7 @@
-export function formatDate(input: string | Date): string {
+export function formatDate(input: string | Date | null | undefined): string {
+  if (!input) return '—'
   const date = typeof input === 'string' ? new Date(input) : input
+  if (isNaN(date.getTime())) return '—'
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -7,8 +9,10 @@ export function formatDate(input: string | Date): string {
   })
 }
 
-export function formatDateTime(input: string | Date): string {
+export function formatDateTime(input: string | Date | null | undefined): string {
+  if (!input) return '—'
   const date = typeof input === 'string' ? new Date(input) : input
+  if (isNaN(date.getTime())) return '—'
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',

@@ -25,6 +25,7 @@ import {
   Headphones,
   ThumbsUp,
   Clock,
+  BookOpen,
 } from 'lucide-react'
 import { formatDate, formatDateTime } from '../utils/formatters'
 import type { BookType } from '../types/book'
@@ -33,6 +34,13 @@ const typeConfig: Record<BookType, { icon: React.ElementType; label: string; col
   INFO: { icon: FileText, label: 'Informational', color: 'bg-blue-50 text-blue-700 border-blue-200' },
   BOOK: { icon: BookMarked, label: 'Book', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   GRAPHICAL: { icon: Image, label: 'Graphical', color: 'bg-amber-50 text-amber-700 border-amber-200' },
+}
+
+function getBookTypeConfig(type: BookType | string | undefined) {
+  if (!type || !typeConfig[type as BookType]) {
+    return { label: 'Book', icon: BookOpen, color: 'bg-surface-100 text-surface-700 border-surface-200' }
+  }
+  return typeConfig[type as BookType]
 }
 
 type Tab = 'reviews' | 'comments' | 'chat'
@@ -141,7 +149,7 @@ export function BookDetailPage() {
     )
   }
 
-  const config = typeConfig[book.type]
+  const config = getBookTypeConfig(book.type)
   const TypeIcon = config.icon
 
   const tabs: { id: Tab; label: string; count?: number }[] = [
@@ -165,9 +173,9 @@ export function BookDetailPage() {
                   <TypeIcon className="h-3 w-3" />
                   {config.label}
                 </span>
-                <Badge variant={book.status === 'READY' ? 'success' : 'warning'}>{book.status}</Badge>
+                <Badge variant={book.status === 'READY' ? 'success' : 'warning'}>{book.status || 'UNKNOWN'}</Badge>
               </div>
-              <h1 className="text-2xl font-bold text-surface-900">{book.title}</h1>
+              <h1 className="text-2xl font-bold text-surface-900">{book.title || 'Untitled'}</h1>
               {book.description && <p className="text-sm text-surface-600">{book.description}</p>}
               <div className="flex items-center gap-4 text-xs text-surface-500">
                 <span className="flex items-center gap-1">
@@ -261,7 +269,7 @@ export function BookDetailPage() {
                 {reviews.map((r) => (
                   <div key={r.id} className="rounded-lg border border-surface-200 bg-surface-50 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-surface-800">{r.userName}</span>
+                      <span className="text-sm font-medium text-surface-800">{r.userName || 'Anonymous'}</span>
                       <span className="text-xs text-surface-400">{formatDate(r.createdAt)}</span>
                     </div>
                     <div className="mt-1 flex items-center gap-1">
@@ -303,7 +311,7 @@ export function BookDetailPage() {
                 {comments.map((c) => (
                   <div key={c.id} className="rounded-lg border border-surface-200 bg-surface-50 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-surface-800">{c.userName}</span>
+                      <span className="text-sm font-medium text-surface-800">{c.userName || 'Anonymous'}</span>
                       <span className="text-xs text-surface-400">{formatDateTime(c.createdAt)}</span>
                     </div>
                     <p className="mt-1 text-sm text-surface-700">{c.content}</p>
@@ -335,7 +343,7 @@ export function BookDetailPage() {
                 {messages.map((m) => (
                   <div key={m.id} className="rounded-lg border border-surface-200 bg-surface-50 p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-surface-800">{m.userName}</span>
+                      <span className="text-sm font-medium text-surface-800">{m.userName || 'Anonymous'}</span>
                       <span className="text-xs text-surface-400">{formatDateTime(m.createdAt)}</span>
                     </div>
                     <p className="mt-1 text-sm text-surface-700">{m.message}</p>

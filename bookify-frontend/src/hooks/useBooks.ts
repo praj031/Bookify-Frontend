@@ -2,6 +2,19 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Book, MarketplaceQuery, PaginatedBooks } from '../types/book'
 import { getInventory, getMarketplace, getBookById, purchaseBook, uploadBook } from '../api/books'
 
+function isArrayResponse<T>(data: unknown): data is T[] {
+  return Array.isArray(data)
+}
+
+function isPaginatedResponse(data: unknown): data is PaginatedBooks {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'content' in data &&
+    Array.isArray((data as PaginatedBooks).content)
+  )
+}
+
 export function useInventory() {
   const [books, setBooks] = useState<Book[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -12,7 +25,12 @@ export function useInventory() {
     setError(null)
     try {
       const data = await getInventory()
-      setBooks(data)
+      if (isArrayResponse<Book>(data)) {
+        setBooks(data)
+      } else {
+        setBooks([])
+        console.warn('Inventory API returned non-array response:', data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load inventory'))
     } finally {
@@ -38,7 +56,12 @@ export function useMarketplace(initialQuery?: MarketplaceQuery) {
     setError(null)
     try {
       const data = await getMarketplace(params)
-      setResult(data)
+      if (isPaginatedResponse(data)) {
+        setResult(data)
+      } else {
+        setResult({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0 })
+        console.warn('Marketplace API returned non-paginated response:', data)
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to load marketplace'))
     } finally {
